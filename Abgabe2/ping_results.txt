@@ -1,0 +1,4 @@
+https://www.uni-frankfurt.de -> {'average_rtt': 13.957, 'min_rtt': 12.209, 'max_rtt': 16.779, 'packet_loss': 0.0, 'is_alive': True}
+https://www.uwa.edu.au -> {'average_rtt': 12.576, 'min_rtt': 10.985, 'max_rtt': 14.805, 'packet_loss': 0.0, 'is_alive': True}
+https://www.utexas.edu -> {'average_rtt': 13.893, 'min_rtt': 12.164, 'max_rtt': 21.45, 'packet_loss': 0.0, 'is_alive': True}
+https://www.esaimaa.fi -> {'average_rtt': 12.537, 'min_rtt': 10.357, 'max_rtt': 36.379, 'packet_loss': 0.0, 'is_alive': True}
