@@ -15,7 +15,7 @@ for i_id in range(5):
 
     # some random messages to the server
     ops = ["SUM", "PRO", "MIN", "MAX"]
-    for i in range(1):
+    for i in range(5):
         id = i
         operation = [ord(x) for x in random.choice(ops)]
         nums = random.choices(list(range(5, 15)), k=random.randint(2, 5))

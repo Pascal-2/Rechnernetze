@@ -11,10 +11,12 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.settimeout(10)
 print('Connecting to TCP server with IP ', Server_IP, ' on Port ', Server_PORT)
 sock.connect((Server_IP, Server_PORT))
+socket_name = sock.getsockname()
+print(socket_name)
 
 # some random messages to the server
 ops = ["SUM", "PRO", "MIN", "MAX"]
-for i in range(20):
+for i in range(1):
     id = i
     operation = [ord(x) for x in random.choice(ops)]
     nums = random.choices(list(range(5, 15)), k=random.randint(2, 5))
