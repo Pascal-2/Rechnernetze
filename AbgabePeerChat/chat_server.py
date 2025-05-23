@@ -75,7 +75,7 @@ class Server:
             try:
                 message_length = int.from_bytes(client_socket.recv(4), byteorder='big', signed=False)
                 message_id = int.from_bytes(client_socket.recv(1), byteorder='big', signed=False)
-                message = client_socket.recv(message_length).decode()
+                message = client_socket.recv(message_length).decode("utf-8")
                 if not message:
                     break
                 local_client = None
@@ -107,6 +107,7 @@ class Server:
                     with self.lock_clients_list:
                         self.clients.remove(local_client)
                     self.notify_clients(1, local_client)
+                    print(f"{local_client.nickname} disconnected.")
                     break
                 elif message_id == 2:
                     #Broadcast
@@ -122,7 +123,7 @@ class Server:
 
                 print(f"Received from {addr}: {message}")
             except Exception as e:
-                print(e)
+                #print(e)
                 break
         client_socket.close()
         # Abmeldung, wenn Verbindung geschlossen wird
@@ -131,8 +132,9 @@ class Server:
             for x in self.clients:
                 if x.socket == client_socket and x.addr == addr:
                     local_client = x
-            self.clients.remove(local_client)
-        self.notify_clients(1, local_client)
+                    self.clients.remove(local_client)
+                    self.notify_clients(1, local_client)
+                    print(f"{local_client.nickname} disconnected.")
 
     """
     0	Anmeldung

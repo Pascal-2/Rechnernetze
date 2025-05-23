@@ -103,7 +103,7 @@ class Client:
                 message_length = int.from_bytes(self.client_socket.recv(4), byteorder='big', signed=False)
                 message_id = int.from_bytes(self.client_socket.recv(1), byteorder='big', signed=False)
                 if message_length > 0:
-                    message = self.client_socket.recv(message_length).decode()
+                    message = self.client_socket.recv(message_length).decode("utf-8")
                 else:
                     message = ""
 
@@ -133,15 +133,15 @@ class Client:
 
 
             except Exception as e:
-                print(e)
+                #print(e)
                 break
-        self.log_out() # being friendly
-        self.client_socket.close()
+        #self.log_out() # being friendly
+        #self.client_socket.close()
 
     def change_username(self, username):
         self.nickname = username
         while True:
-            if 20 >= len(self.nickname) >= 1:
+            if 20 >= len(self.nickname) >= 1 and "|" not in self.nickname:
                 break
             self.nickname = input("Please choose another nickname in this format: \"example\" <-- with the quotes!")
 
@@ -182,12 +182,12 @@ class Client:
 def main():
     while True:
         username = input("Please enter your nickname: ")
-        if 20 >= len(username) >= 1:
+        if 20 >= len(username) >= 1 and "|" not in username:
             break
         else:
             print("Invalid nickname.")
     my_ip = "127.0.0.1"
-    my_udp_port = 33334
+    my_udp_port = 33333
     you = Client(username, my_ip, my_udp_port)
     you.start_client()
 
