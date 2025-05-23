@@ -187,7 +187,7 @@ def main():
         else:
             print("Invalid nickname.")
     my_ip = "127.0.0.1"
-    my_udp_port = 33333
+    my_udp_port = 33334
     you = Client(username, my_ip, my_udp_port)
     you.start_client()
 

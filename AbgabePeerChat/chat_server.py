@@ -1,5 +1,5 @@
 import threading
-from socket import socket
+import socket
 
 class Client_data:
     def __init__(self, _id, socket, address):
@@ -114,6 +114,8 @@ class Server:
                         for x in self.clients:
                             if x != local_client:
                                 self.send_broadcast(x, local_client.nickname, message)
+                            else:
+                                self.send_broadcast(x, local_client.nickname, "Server: Sent your message to everyone: " + message)
                 else:
                     self.send_bad_format(client_socket)
                     break
@@ -121,11 +123,9 @@ class Server:
                 print(f"Received from {addr}: {message}")
             except Exception as e:
                 print(e)
-                #send back 'bad format' message
-                self.send_bad_format(client_socket)
                 break
         client_socket.close()
-        # Abmeldung wenn Verbindung geschlossen wird
+        # Abmeldung, wenn Verbindung geschlossen wird
         local_client = None
         with self.lock_clients_list:
             for x in self.clients:
@@ -151,3 +151,9 @@ class Server:
             self.id += 1
             thread = threading.Thread(target=self.handle_client, args=(client_socket, addr))
             thread.start()
+
+def main():
+    server = Server()
+    server.start_server()
+
+main()
