@@ -1,7 +1,7 @@
 import threading
 from socket import socket
 
-class Client:
+class Client_data:
     def __init__(self, _id, socket, address):
         self._id = _id
         self.socket = socket
@@ -119,7 +119,6 @@ class Server:
                     break
 
                 print(f"Received from {addr}: {message}")
-                client_socket.sendall(f"Echo: {message}".encode())
             except Exception as e:
                 print(e)
                 #send back 'bad format' message
@@ -148,7 +147,7 @@ class Server:
         while True:
             client_socket, addr = self.server_socket.accept()
             with self.lock_clients_list:
-                self.clients.append(Client(self.id, client_socket, addr))
+                self.clients.append(Client_data(self.id, client_socket, addr))
             self.id += 1
             thread = threading.Thread(target=self.handle_client, args=(client_socket, addr))
             thread.start()
