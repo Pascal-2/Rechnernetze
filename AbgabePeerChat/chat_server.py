@@ -15,7 +15,7 @@ class Server:
         self.lock_clients_list = threading.Lock()
         self.clients = []
         self.id = 0
-        self.ip = '127.0.0.1'
+        self.ip = '100.123.250.170'#'127.0.0.1'
         self.port = 22222
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.bind((self.ip, self.port))

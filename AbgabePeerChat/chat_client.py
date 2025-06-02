@@ -498,7 +498,7 @@ class Client:
                 msg_body_len = int.from_bytes(data[0:4], byteorder='big', signed=False)
                 #msg_id = int.from_bytes(data[4:5], byteorder='big', signed=False)
 
-                expected_total_len = 4 + 1 + msg_body_len
+                expected_total_len = 4 + msg_body_len
                 if len(data) != expected_total_len:
                     print(
                         f"[{self.nickname}] UDP packet from {addr} has mismatched length. Header says body {msg_body_len}B (total {expected_total_len}B), got {len(data)}B. Discarding.")
@@ -589,7 +589,7 @@ def main():
         else:
             print("Invalid nickname. Please try again.")
 
-    my_ip = "127.0.0.1"  # For local testing. For wider network, use actual interface IP.
+    my_ip = "100.123.250.170"  # For local testing. For wider network, use actual interface IP.
 
     # Allow different ports for multiple local instances
     # This is a simple way; for production, port assignment might be dynamic or configured.
@@ -602,7 +602,7 @@ def main():
         instance_num = 1
 
     # Base ports - ensure these don't clash with other apps or server
-    base_udp_port = 33330
+    base_udp_port = 33320
     base_tcp_port_initiation = 23230
 
     my_udp_port = base_udp_port + instance_num  # For listening to P2P chat requests
