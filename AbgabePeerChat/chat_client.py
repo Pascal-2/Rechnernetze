@@ -2,7 +2,7 @@ import threading
 import time
 import socket
 
-HOST = '127.0.0.1'  # Server's host
+HOST = '100.106.202.189'  # Server's host
 PORT = 22222  # Server's port
 
 
@@ -257,8 +257,8 @@ class Client:
         request_str = f"{self.nickname}|{self.ip}|{self.tcp_port_for_initiation}"
         request_body = request_str.encode('utf-8')
         request_len_bytes = len(request_body).to_bytes(4, byteorder='big')
-        request_id_bytes = (4).to_bytes(1, byteorder='big')  # P2P Chat Request ID
-        udp_request_packet = request_len_bytes + request_id_bytes + request_body
+        #request_id_bytes = (4).to_bytes(1, byteorder='big')  # P2P Chat Request ID
+        udp_request_packet = request_len_bytes + request_body
 
         connected_data_socket = None
         for attempt in range(2):
@@ -496,7 +496,7 @@ class Client:
                     continue
 
                 msg_body_len = int.from_bytes(data[0:4], byteorder='big', signed=False)
-                msg_id = int.from_bytes(data[4:5], byteorder='big', signed=False)
+                #msg_id = int.from_bytes(data[4:5], byteorder='big', signed=False)
 
                 expected_total_len = 4 + 1 + msg_body_len
                 if len(data) != expected_total_len:
@@ -504,39 +504,39 @@ class Client:
                         f"[{self.nickname}] UDP packet from {addr} has mismatched length. Header says body {msg_body_len}B (total {expected_total_len}B), got {len(data)}B. Discarding.")
                     continue
 
-                if msg_id == 4:  # P2P Chat Request ID
-                    message_body_str = data[5: 5 + msg_body_len].decode('utf-8')
-                    splits = message_body_str.split("|")  # InitiatorNickname | InitiatorIP | InitiatorTCPPort
+                #if msg_id == 4:  # P2P Chat Request ID
+                message_body_str = data[5: 5 + msg_body_len].decode('utf-8')
+                splits = message_body_str.split("|")  # InitiatorNickname | InitiatorIP | InitiatorTCPPort
 
-                    if len(splits) == 3:
-                        req_peer_nick, req_peer_ip, req_peer_tcp_port_str = splits
+                if len(splits) == 3:
+                    req_peer_nick, req_peer_ip, req_peer_tcp_port_str = splits
+                    print(
+                        f"[{self.nickname}] Received P2P chat UDP request from {req_peer_nick} ({req_peer_ip}:{req_peer_tcp_port_str}) (source UDP: {addr}).")
+
+                    try:
+                        req_peer_tcp_port = int(req_peer_tcp_port_str)
+                    except ValueError:
                         print(
-                            f"[{self.nickname}] Received P2P chat UDP request from {req_peer_nick} ({req_peer_ip}:{req_peer_tcp_port_str}) (source UDP: {addr}).")
+                            f"[{self.nickname}] Invalid TCP port '{req_peer_tcp_port_str}' in chat request from {req_peer_nick}. Discarding.")
+                        continue
 
-                        try:
-                            req_peer_tcp_port = int(req_peer_tcp_port_str)
-                        except ValueError:
+                    with self.open_chat_sockets_lock:  # Avoid race condition if already chatting
+                        if any(s_info[1] == req_peer_nick for s_info in self.open_chat_sockets):
                             print(
-                                f"[{self.nickname}] Invalid TCP port '{req_peer_tcp_port_str}' in chat request from {req_peer_nick}. Discarding.")
+                                f"[{self.nickname}] Already in chat with {req_peer_nick}. Ignoring new UDP request.")
                             continue
 
-                        with self.open_chat_sockets_lock:  # Avoid race condition if already chatting
-                            if any(s_info[1] == req_peer_nick for s_info in self.open_chat_sockets):
-                                print(
-                                    f"[{self.nickname}] Already in chat with {req_peer_nick}. Ignoring new UDP request.")
-                                continue
-
-                        # Start a new thread to connect back to the initiator
-                        accept_thread = threading.Thread(target=self.accept_peer_chat,
-                                                         args=(req_peer_nick, req_peer_ip, req_peer_tcp_port))
-                        accept_thread.daemon = True
-                        accept_thread.start()
-                    else:
-                        print(
-                            f"[{self.nickname}] Malformed P2P chat request body from {addr}: '{message_body_str}'. Expected 3 parts, got {len(splits)}.")
+                    # Start a new thread to connect back to the initiator
+                    accept_thread = threading.Thread(target=self.accept_peer_chat,
+                                                     args=(req_peer_nick, req_peer_ip, req_peer_tcp_port))
+                    accept_thread.daemon = True
+                    accept_thread.start()
                 else:
                     print(
-                        f"[{self.nickname}] Received UDP packet from {addr} with non-P2P-request ID {msg_id}. Discarding.")
+                        f"[{self.nickname}] Malformed P2P chat request body from {addr}: '{message_body_str}'. Expected 3 parts, got {len(splits)}.")
+                #else:
+                    #print(
+                        #f"[{self.nickname}] Received UDP packet from {addr} with non-P2P-request ID {msg_id}. Discarding.")
 
             except socket.timeout:
                 continue
