@@ -2,7 +2,7 @@ import threading
 import time
 import socket
 
-HOST = '100.106.202.189'  # Server's host
+HOST = '100.111.188.229'  # Server's host
 PORT = 22222  # Server's port
 
 
